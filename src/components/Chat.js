@@ -74,7 +74,7 @@ const Chat = () => {
       />
       <Box borderWidth={1} borderRadius="lg" p={4} mb={4} height="400px" overflowY="scroll">
         {messages.map((msg, index) => (
-          <Box key={index} mb={2}>
+          <Box key={index} mb={2} textAlign="left">
             <Text fontWeight="bold">{msg.sender}</Text>
             <Text>{msg.message}</Text>
             <Text fontSize="xs" color="gray.500">{new Date(msg.timestamp).toLocaleString()}</Text>
