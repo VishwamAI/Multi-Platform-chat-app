@@ -7,6 +7,7 @@ const { generateKeyPair, encryptMessage, decryptMessage } = require('./encryptio
 const { router: authRouter, authenticateToken } = require('./auth');
 const statusRouter = require('./status');
 const messagesRouter = require('./messages');
+const { userExists } = require('./db');
 
 const app = express();
 const server = http.createServer(app);
@@ -77,7 +78,20 @@ io.on('connection', (socket) => {
 
   // Handle video call signaling
   socket.on('callUser', (data) => {
-    io.to(data.userToCall).emit('callUser', { signal: data.signalData, from: data.from });
+    userExists(data.userToCall, (err, exists) => {
+      if (err) {
+        console.error('Error checking user existence:', err);
+        socket.emit('callError', { message: 'Error checking user existence' });
+        console.log('Emitted callError event: Error checking user existence');
+        return;
+      }
+      if (!exists) {
+        socket.emit('callError', { message: 'User ID not found' });
+        console.log('Emitted callError event: User ID not found');
+        return;
+      }
+      io.to(data.userToCall).emit('callUser', { signal: data.signalData, from: data.from });
+    });
   });
 
   socket.on('acceptCall', (data) => {
