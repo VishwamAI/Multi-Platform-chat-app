@@ -12,17 +12,38 @@ const VideoCall = () => {
   const [callerSignal, setCallerSignal] = useState(null);
   const [callAccepted, setCallAccepted] = useState(false);
   const [peer, setPeer] = useState(null);
+  const [cameraPermission, setCameraPermission] = useState("prompt");
+  const [microphonePermission, setMicrophonePermission] = useState("prompt");
 
   const userVideo = useRef();
   const partnerVideo = useRef();
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      setStream(stream);
-      if (userVideo.current) {
-        userVideo.current.srcObject = stream;
-      }
+    navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
+      setCameraPermission(permissionStatus.state);
+      permissionStatus.onchange = () => {
+        setCameraPermission(permissionStatus.state);
+      };
     });
+
+    navigator.permissions.query({ name: "microphone" }).then((permissionStatus) => {
+      setMicrophonePermission(permissionStatus.state);
+      permissionStatus.onchange = () => {
+        setMicrophonePermission(permissionStatus.state);
+      };
+    });
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setStream(stream);
+        if (userVideo.current) {
+          userVideo.current.srcObject = stream;
+        }
+      })
+      .catch((error) => {
+        console.error("Error accessing media devices:", error);
+        alert("Could not access your camera and microphone. Please check your device settings and permissions.");
+      });
 
     socket.on("callUser", (data) => {
       setReceivingCall(true);
@@ -90,6 +111,13 @@ const VideoCall = () => {
           <Button colorScheme="teal" onClick={acceptCall}>Accept Call</Button>
         </Box>
       )}
+      <Box mt={4}>
+        <Text>Camera Permission: {cameraPermission}</Text>
+        <Text>Microphone Permission: {microphonePermission}</Text>
+        {cameraPermission === "prompt" && microphonePermission === "prompt" && (
+          <Text>Please allow camera and microphone access to use the video call feature.</Text>
+        )}
+      </Box>
     </Box>
   );
 };
