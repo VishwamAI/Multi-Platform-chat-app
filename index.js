@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { generateKeyPair, encryptMessage, decryptMessage } = require('./encryption');
 const { router: authRouter, authenticateToken } = require('./auth');
 const statusRouter = require('./status');
@@ -13,7 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ['https://capable-longma-625b94.netlify.app', 'http://localhost:3000'],
+    origin: 'http://capable-longma-625b94.netlify.app', // Allow requests from the Netlify frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -23,7 +24,7 @@ const io = socketIo(server, {
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: ['https://capable-longma-625b94.netlify.app', 'http://localhost:3000'],
+  origin: 'http://capable-longma-625b94.netlify.app', // Allow requests from the Netlify frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -55,6 +56,11 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
   console.log('New client connected');
+
+  // Generate a unique, encrypted identifier for the chat session
+  const sessionId = crypto.randomBytes(16).toString('hex');
+  const encryptedSessionId = crypto.createHash('sha256').update(sessionId).digest('hex');
+  socket.emit('sessionId', { sessionId: encryptedSessionId });
 
   // Handle message sending
   socket.on('sendMessage', async ({ publicKey, message }) => {
