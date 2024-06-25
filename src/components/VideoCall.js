@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Text, Input, Alert, AlertIcon } from "@chakra-ui/react";
 import SimplePeer from "simple-peer";
 import io from "socket.io-client";
 
@@ -14,11 +14,15 @@ const VideoCall = () => {
   const [peer, setPeer] = useState(null);
   const [cameraPermission, setCameraPermission] = useState("prompt");
   const [microphonePermission, setMicrophonePermission] = useState("prompt");
+  const [userIdToCall, setUserIdToCall] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const userVideo = useRef();
   const partnerVideo = useRef();
 
   useEffect(() => {
+    console.log("Setting up socket event listeners");
+
     navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
       setCameraPermission(permissionStatus.state);
       permissionStatus.onchange = () => {
@@ -47,26 +51,45 @@ const VideoCall = () => {
           })
           .catch((error) => {
             console.error("Error accessing media devices:", error);
-            alert("Could not access your camera and microphone. Please check your device settings and permissions.");
+            setErrorMessage("Could not access your camera and microphone. Please check your device settings and permissions.");
           });
       } else {
-        alert("No camera or microphone found. Please connect your devices and try again.");
+        setErrorMessage("No camera or microphone found. Please connect your devices and try again.");
       }
     });
 
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
     socket.on("callUser", (data) => {
+      console.log("Received callUser event:", data);
       setReceivingCall(true);
       setCaller(data.from);
       setCallerSignal(data.signal);
     });
 
     socket.on("callAccepted", (signal) => {
+      console.log("Received callAccepted event");
       setCallAccepted(true);
       peer.signal(signal);
     });
+
+    socket.on("callError", (data) => {
+      console.log("Received callError event:", data);
+      setErrorMessage(data.message);
+      console.log("Error Message Set:", data.message);
+    });
+
+    console.log("Socket event listeners set up");
   }, [peer]);
 
-  const callUser = (id) => {
+  const callUser = () => {
+    if (!userIdToCall) {
+      setErrorMessage("Please enter a valid user ID.");
+      return;
+    }
+
     const peer = new SimplePeer({
       initiator: true,
       trickle: false,
@@ -74,7 +97,7 @@ const VideoCall = () => {
     });
 
     peer.on("signal", (data) => {
-      socket.emit("callUser", { userToCall: id, signalData: data, from: socket.id });
+      socket.emit("callUser", { userToCall: userIdToCall, signalData: data, from: socket.id });
     });
 
     peer.on("stream", (stream) => {
@@ -108,23 +131,32 @@ const VideoCall = () => {
 
   return (
     <Box p={4}>
-      <Text fontSize="2xl" mb={4}>Video Call</Text>
+      <Text fontSize="2xl" mb={4} textAlign="center">Video Call</Text>
       <Box display="flex" justifyContent="space-around" mb={4}>
-        <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px" }} />
-        {callAccepted && <video playsInline ref={partnerVideo} autoPlay style={{ width: "300px" }} />}
+        <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
+        {callAccepted && <video playsInline ref={partnerVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />}
       </Box>
-      <Button colorScheme="teal" onClick={() => callUser("user-id")}>Call User</Button>
+      <Box display="flex" justifyContent="center" mb={4}>
+        <Input placeholder="Enter user ID to call..." width="300px" mr={2} value={userIdToCall} onChange={(e) => setUserIdToCall(e.target.value)} />
+        <Button colorScheme="teal" onClick={callUser}>Call User</Button>
+      </Box>
       {receivingCall && !callAccepted && (
-        <Box>
-          <Text>{caller} is calling you</Text>
+        <Box textAlign="center" mt={4}>
+          <Text fontSize="lg" mb={2}>{caller} is calling you</Text>
           <Button colorScheme="teal" onClick={acceptCall}>Accept Call</Button>
         </Box>
       )}
-      <Box mt={4}>
-        <Text>Camera Permission: {cameraPermission}</Text>
-        <Text>Microphone Permission: {microphonePermission}</Text>
+      {errorMessage && (
+        <Alert status="error" mt={4}>
+          <AlertIcon />
+          {errorMessage}
+        </Alert>
+      )}
+      <Box mt={4} textAlign="center">
+        <Text>Camera Permission: <b>{cameraPermission}</b></Text>
+        <Text>Microphone Permission: <b>{microphonePermission}</b></Text>
         {cameraPermission === "prompt" && microphonePermission === "prompt" && (
-          <Text>Please allow camera and microphone access to use the video call feature.</Text>
+          <Text color="red.500" mt={2}>Please allow camera and microphone access to use the video call feature.</Text>
         )}
       </Box>
     </Box>
