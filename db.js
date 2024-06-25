@@ -18,7 +18,15 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         )`,
       (err) => {
         if (err) {
-          // Table already created
+          // Table already created, check for missing columns
+          db.run(`ALTER TABLE user ADD COLUMN status TEXT`, (err) => {
+            if (err) {
+              // Column already exists or another error
+              console.log('Status column already exists or another error:', err.message);
+            } else {
+              console.log('Status column added successfully.');
+            }
+          });
         } else {
           // Table just created, creating some rows
           const insert = 'INSERT INTO user (username, password, publicKey, privateKey, status) VALUES (?,?,?,?,?)';
