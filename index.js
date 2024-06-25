@@ -31,6 +31,20 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Middleware to explicitly set CORS headers
+app.use((req, res, next) => {
+  const allowedOrigins = ['https://bucolic-stardust-adb838.netlify.app', 'http://localhost:3000', 'https://statuesque-eclair-40901e.netlify.app'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/status', statusRouter);
