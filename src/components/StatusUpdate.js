@@ -6,7 +6,7 @@ const StatusUpdate = () => {
 
   const handleStatusUpdate = async () => {
     try {
-      const response = await fetch('/status', {
+      const response = await fetch('https://messaging-app-5btcll2g.devinapps.com/status', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

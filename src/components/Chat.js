@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Box, Text, Input, Button, Flex } from "@chakra-ui/react";
+import Picker from 'emoji-picker-react';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [receiver, setReceiver] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   useEffect(() => {
     // Fetch message history between the logged-in user and the selected receiver
@@ -57,6 +59,10 @@ const Chat = () => {
     }
   };
 
+  const onEmojiClick = (event, emojiObject) => {
+    setMessage(message + emojiObject.emoji);
+  };
+
   return (
     <Box p={4}>
       <Text fontSize="2xl" mb={4}>Chat with {receiver}</Text>
@@ -82,6 +88,8 @@ const Chat = () => {
           onChange={(e) => setMessage(e.target.value)}
           mr={2}
         />
+        <Button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</Button>
+        {showEmojiPicker && <Picker onEmojiClick={onEmojiClick} />}
         <Button colorScheme="teal" onClick={handleSendMessage}>Send</Button>
       </Flex>
     </Box>
