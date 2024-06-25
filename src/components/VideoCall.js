@@ -3,7 +3,7 @@ import { Box, Button, Text } from "@chakra-ui/react";
 import SimplePeer from "simple-peer";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://messaging-app-5btcll2g.devinapps.com");
 
 const VideoCall = () => {
   const [stream, setStream] = useState(null);

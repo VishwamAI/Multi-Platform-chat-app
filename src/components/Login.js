@@ -1,13 +1,24 @@
 import React, { useState } from "react";
 import { Box, Text, Input, Button } from "@chakra-ui/react";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Handle login logic here
+    try {
+      const response = await axios.post("https://messaging-app-5btcll2g.devinapps.com/login", {
+        email,
+        password,
+      });
+      console.log("Login successful:", response.data);
+      // Handle successful login, e.g., store token, redirect to chat page
+    } catch (error) {
+      console.error("Login failed:", error.response ? error.response.data : error.message);
+      // Handle login failure, e.g., show error message to user
+    }
   };
 
   return (

@@ -9,6 +9,7 @@ import Chat from "./components/Chat";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import StatusUpdate from "./components/StatusUpdate";
+import UserStatus from "./components/UserStatus";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/status" element={<StatusUpdate />} />
+          <Route path="/user-status/:username" element={<UserStatus />} />
           <Route path="/" element={<Login />} />
         </Routes>
       </Router>
