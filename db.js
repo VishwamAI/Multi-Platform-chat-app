@@ -51,4 +51,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
   }
 });
 
-module.exports = db;
+// Function to check if a user exists by username
+function userExists(username, callback) {
+  const query = 'SELECT * FROM user WHERE username = ?';
+  db.get(query, [username], (err, row) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      callback(null, !!row);
+    }
+  });
+}
+
+module.exports = { db, userExists };
