@@ -13,7 +13,7 @@ const Chat = () => {
     // Fetch message history between the logged-in user and the selected receiver
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`https://messaging-app-5btcll2g.devinapps.com/messages/history/${localStorage.getItem('username')}/${receiver}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/history/${localStorage.getItem('username')}/${receiver}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -32,7 +32,7 @@ const Chat = () => {
 
   const handleSendMessage = async () => {
     try {
-      const response = await fetch('https://messaging-app-5btcll2g.devinapps.com/messages/send', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

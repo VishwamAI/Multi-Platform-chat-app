@@ -3,18 +3,20 @@ import { Box, Text, Input, Button } from "@chakra-ui/react";
 import axios from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
-        email,
+        username,
         password,
       });
       console.log("Login successful:", response.data);
-      // Handle successful login, e.g., store token, redirect to chat page
+      // Store the JWT token in localStorage
+      localStorage.setItem('token', response.data.token);
+      // Redirect to chat page or handle successful login
     } catch (error) {
       console.error("Login failed:", error.response ? error.response.data : error.message);
       // Handle login failure, e.g., show error message to user
@@ -27,10 +29,10 @@ const Login = () => {
       <Box borderWidth={1} borderRadius="lg" p={4} mb={4}>
         <form onSubmit={handleLogin}>
           <Input
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             mb={4}
           />
           <Input
