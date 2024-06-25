@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { generateKeyPair, encryptMessage, decryptMessage } = require('./encryption');
 const { router: authRouter, authenticateToken } = require('./auth');
@@ -13,6 +14,7 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 5000;
 
+app.use(cors());
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/status', statusRouter);
