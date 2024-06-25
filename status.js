@@ -5,7 +5,7 @@ const db = require('./db');
 const router = express.Router();
 
 // Route to update user status
-router.post('/status', authenticateToken, (req, res) => {
+router.post('/', authenticateToken, (req, res) => {
   const { username } = req.user;
   const { status } = req.body;
 
@@ -19,7 +19,7 @@ router.post('/status', authenticateToken, (req, res) => {
 });
 
 // Route to get user status
-router.get('/status/:username', (req, res) => {
+router.get('/:username', (req, res) => {
   const { username } = req.params;
 
   const query = 'SELECT status FROM user WHERE username = ?';
