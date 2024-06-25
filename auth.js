@@ -6,7 +6,7 @@ const db = require('./db');
 
 const router = express.Router();
 
-const JWT_SECRET = 'your_jwt_secret'; // Replace with a secure secret in production
+const JWT_SECRET = process.env.JWT_SECRET || 'default_jwt_secret'; // Use environment variable for JWT secret
 
 // User registration route
 router.post('/register', async (req, res) => {
