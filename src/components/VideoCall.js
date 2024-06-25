@@ -33,17 +33,26 @@ const VideoCall = () => {
       };
     });
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        setStream(stream);
-        if (userVideo.current) {
-          userVideo.current.srcObject = stream;
-        }
-      })
-      .catch((error) => {
-        console.error("Error accessing media devices:", error);
-        alert("Could not access your camera and microphone. Please check your device settings and permissions.");
-      });
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      const hasVideoInput = devices.some((device) => device.kind === "videoinput");
+      const hasAudioInput = devices.some((device) => device.kind === "audioinput");
+
+      if (hasVideoInput && hasAudioInput) {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then((stream) => {
+            setStream(stream);
+            if (userVideo.current) {
+              userVideo.current.srcObject = stream;
+            }
+          })
+          .catch((error) => {
+            console.error("Error accessing media devices:", error);
+            alert("Could not access your camera and microphone. Please check your device settings and permissions.");
+          });
+      } else {
+        alert("No camera or microphone found. Please connect your devices and try again.");
+      }
+    });
 
     socket.on("callUser", (data) => {
       setReceivingCall(true);
