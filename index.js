@@ -24,26 +24,20 @@ const io = socketIo(server, {
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: ['https://bucolic-stardust-adb838.netlify.app', 'http://localhost:3000', 'https://statuesque-eclair-40901e.netlify.app'], // Allow requests from the Netlify frontend and local development
+  origin: (origin, callback) => {
+    const allowedOrigins = ['https://bucolic-stardust-adb838.netlify.app', 'http://localhost:3000', 'https://statuesque-eclair-40901e.netlify.app'];
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-
-// Middleware to explicitly set CORS headers
-app.use((req, res, next) => {
-  const allowedOrigins = ['https://bucolic-stardust-adb838.netlify.app', 'http://localhost:3000', 'https://statuesque-eclair-40901e.netlify.app'];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
 
 app.use(express.json());
 app.use('/auth', authRouter);
