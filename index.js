@@ -14,7 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ['http://capable-longma-625b94.netlify.app', 'http://localhost:3000'], // Allow requests from the Netlify frontend and local development
+    origin: ['https://bucolic-stardust-adb838.netlify.app', 'http://localhost:3000', 'https://statuesque-eclair-40901e.netlify.app'], // Allow requests from the Netlify frontend and local development
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -24,7 +24,7 @@ const io = socketIo(server, {
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: ['http://capable-longma-625b94.netlify.app', 'http://localhost:3000'], // Allow requests from the Netlify frontend and local development
+  origin: ['https://bucolic-stardust-adb838.netlify.app', 'http://localhost:3000', 'https://statuesque-eclair-40901e.netlify.app'], // Allow requests from the Netlify frontend and local development
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
