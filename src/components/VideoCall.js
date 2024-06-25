@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, Text } from "@chakra-ui/react";
 import SimplePeer from "simple-peer";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:5000");
 
 const VideoCall = () => {
   const [stream, setStream] = useState(null);
@@ -20,7 +23,18 @@ const VideoCall = () => {
         userVideo.current.srcObject = stream;
       }
     });
-  }, []);
+
+    socket.on("callUser", (data) => {
+      setReceivingCall(true);
+      setCaller(data.from);
+      setCallerSignal(data.signal);
+    });
+
+    socket.on("callAccepted", (signal) => {
+      setCallAccepted(true);
+      peer.signal(signal);
+    });
+  }, [peer]);
 
   const callUser = (id) => {
     const peer = new SimplePeer({
@@ -30,8 +44,7 @@ const VideoCall = () => {
     });
 
     peer.on("signal", (data) => {
-      // Send signal data to the server to initiate the call
-      // Example: socket.emit("callUser", { userToCall: id, signalData: data, from: yourID });
+      socket.emit("callUser", { userToCall: id, signalData: data, from: socket.id });
     });
 
     peer.on("stream", (stream) => {
@@ -52,8 +65,7 @@ const VideoCall = () => {
     });
 
     peer.on("signal", (data) => {
-      // Send signal data to the server to accept the call
-      // Example: socket.emit("acceptCall", { signal: data, to: caller });
+      socket.emit("acceptCall", { signal: data, to: caller });
     });
 
     peer.on("stream", (stream) => {
