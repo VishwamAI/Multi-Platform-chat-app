@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Box, Text, Input, Button, Flex } from "@chakra-ui/react";
 import Picker from 'emoji-picker-react';
-import { Grid } from '@giphy/react-components';
-import { GiphyFetch } from '@giphy/js-fetch-api';
-
-const gf = new GiphyFetch('YOUR_GIPHY_API_KEY');
+import GifUploader from './GifUploader';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [receiver, setReceiver] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [showGifPicker, setShowGifPicker] = useState(false);
 
   useEffect(() => {
     // Fetch message history between the logged-in user and the selected receiver
@@ -68,9 +64,8 @@ const Chat = () => {
     setMessage(message + emojiObject.emoji);
   };
 
-  const onGifClick = (gif) => {
-    setMessage(message + gif.url);
-    setShowGifPicker(false);
+  const onGifUpload = (gifData) => {
+    setMessage(message + gifData);
   };
 
   return (
@@ -100,8 +95,7 @@ const Chat = () => {
         />
         <Button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</Button>
         {showEmojiPicker && <Picker onEmojiClick={onEmojiClick} />}
-        <Button onClick={() => setShowGifPicker(!showGifPicker)}>GIF</Button>
-        {showGifPicker && <Grid width={300} columns={3} fetchGifs={gf.trending} onGifClick={onGifClick} />}
+        <GifUploader onGifUpload={onGifUpload} />
         <Button colorScheme="teal" onClick={handleSendMessage}>Send</Button>
       </Flex>
     </Box>
