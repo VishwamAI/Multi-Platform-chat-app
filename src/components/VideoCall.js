@@ -46,15 +46,19 @@ const VideoCall = () => {
     console.log("REACT_APP_API_URL:", process.env.REACT_APP_API_URL);
 
     navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
+      console.log("Camera permission status:", permissionStatus.state);
       setCameraPermission(permissionStatus.state);
       permissionStatus.onchange = () => {
+        console.log("Camera permission status changed:", permissionStatus.state);
         setCameraPermission(permissionStatus.state);
       };
     });
 
     navigator.permissions.query({ name: "microphone" }).then((permissionStatus) => {
+      console.log("Microphone permission status:", permissionStatus.state);
       setMicrophonePermission(permissionStatus.state);
       permissionStatus.onchange = () => {
+        console.log("Microphone permission status changed:", permissionStatus.state);
         setMicrophonePermission(permissionStatus.state);
       };
     });
@@ -62,10 +66,13 @@ const VideoCall = () => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const hasVideoInput = devices.some((device) => device.kind === "videoinput");
       const hasAudioInput = devices.some((device) => device.kind === "audioinput");
+      console.log("Has video input:", hasVideoInput);
+      console.log("Has audio input:", hasAudioInput);
 
       if (hasVideoInput && hasAudioInput) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
+            console.log("Media stream obtained");
             if (userVideo.current) {
               userVideo.current.srcObject = stream;
             }
