@@ -114,6 +114,7 @@ const VideoCall = () => {
           throw new Error("No meeting data found in response");
         }
         setMeeting(data.meeting);
+        console.log("Meeting state set:", data.meeting);
       } catch (error) {
         console.error("Error initializing Dyte client:", error);
         setErrorMessage("Could not initialize Dyte client. Please try again later.");
