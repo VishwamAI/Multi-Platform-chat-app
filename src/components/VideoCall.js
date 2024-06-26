@@ -43,6 +43,7 @@ const VideoCall = () => {
   useEffect(() => {
     console.log("Executing useEffect in VideoCall component");
     console.log("Setting up Dyte client");
+    console.log("REACT_APP_API_URL:", process.env.REACT_APP_API_URL);
 
     navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
       setCameraPermission(permissionStatus.state);
