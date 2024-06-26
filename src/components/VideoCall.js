@@ -32,6 +32,7 @@ class ErrorBoundary extends React.Component {
 }
 
 const VideoCall = () => {
+  console.log("VideoCall component is being called");
   console.log("Rendering VideoCall component");
   const [meeting, setMeeting] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
