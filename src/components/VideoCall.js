@@ -52,6 +52,9 @@ const VideoCall = () => {
         console.log("Camera permission status changed:", permissionStatus.state);
         setCameraPermission(permissionStatus.state);
       };
+    }).catch((error) => {
+      console.error("Error querying camera permissions:", error);
+      setErrorMessage("Could not query camera permissions. Please check your browser settings.");
     });
 
     navigator.permissions.query({ name: "microphone" }).then((permissionStatus) => {
@@ -61,6 +64,9 @@ const VideoCall = () => {
         console.log("Microphone permission status changed:", permissionStatus.state);
         setMicrophonePermission(permissionStatus.state);
       };
+    }).catch((error) => {
+      console.error("Error querying microphone permissions:", error);
+      setErrorMessage("Could not query microphone permissions. Please check your browser settings.");
     });
 
     navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -84,6 +90,9 @@ const VideoCall = () => {
       } else {
         setErrorMessage("No camera or microphone found. Please connect your devices and try again.");
       }
+    }).catch((error) => {
+      console.error("Error enumerating media devices:", error);
+      setErrorMessage("Could not enumerate media devices. Please check your device settings.");
     });
 
     // Initialize Dyte client
