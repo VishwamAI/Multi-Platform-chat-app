@@ -25,6 +25,9 @@ const backendUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:50
 function App() {
   const navigate = useNavigate();
 
+  console.log("App component mounted");
+  console.log("backendUrl:", backendUrl);
+
   return (
     <ThemeProvider theme={customTheme}>
       <CSSReset />
