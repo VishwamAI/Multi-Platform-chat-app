@@ -6,7 +6,7 @@ import {
   Flex,
   IconButton,
 } from "@chakra-ui/react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { customTheme } from "./theme";
 import { FaComments, FaUserFriends, FaUsers, FaCog } from "react-icons/fa";
 import Chat from "./components/Chat";
@@ -15,8 +15,13 @@ import Register from "./components/Register";
 import StatusUpdate from "./components/StatusUpdate";
 import UserStatus from "./components/UserStatus";
 import VideoCall from "./components/VideoCall";
+import Contacts from "./components/Contacts";
+import Groups from "./components/Groups";
+import Settings from "./components/Settings";
 
 function App() {
+  const navigate = useNavigate();
+
   return (
     <ThemeProvider theme={customTheme}>
       <CSSReset />
@@ -31,6 +36,7 @@ function App() {
                 variant="ghost"
                 colorScheme="whiteAlpha"
                 isRound
+                onClick={() => navigate("/chat")}
               />
             </Box>
             <Box p={4}>
@@ -40,6 +46,7 @@ function App() {
                 variant="ghost"
                 colorScheme="whiteAlpha"
                 isRound
+                onClick={() => navigate("/contacts")}
               />
             </Box>
             <Box p={4}>
@@ -49,6 +56,7 @@ function App() {
                 variant="ghost"
                 colorScheme="whiteAlpha"
                 isRound
+                onClick={() => navigate("/groups")}
               />
             </Box>
             <Box p={4}>
@@ -58,6 +66,7 @@ function App() {
                 variant="ghost"
                 colorScheme="whiteAlpha"
                 isRound
+                onClick={() => navigate("/settings")}
               />
             </Box>
           </Box>
@@ -74,6 +83,9 @@ function App() {
               <Route path="/status" element={<StatusUpdate />} />
               <Route path="/user-status/:username" element={<UserStatus />} />
               <Route path="/videocall" element={<VideoCall />} />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/groups" element={<Groups />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/" element={<Login />} />
             </Routes>
           </Box>
