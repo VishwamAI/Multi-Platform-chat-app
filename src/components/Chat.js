@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Text, Input, Button, Flex, Select } from "@chakra-ui/react";
 import Picker from 'emoji-picker-react';
 import GifUploader from './GifUploader';
+import { useNavigate } from 'react-router-dom';
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -10,6 +11,7 @@ const Chat = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [username, setUsername] = useState("testuser"); // Default username for testing
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch message history between the logged-in user and the selected receiver
@@ -80,6 +82,10 @@ const Chat = () => {
     setMessage(message + gifData);
   };
 
+  const handleVideoCall = () => {
+    navigate('/videocall');
+  };
+
   return (
     <Box p={4}>
       <Text fontSize="2xl" mb={4}>Chat with {receiver}</Text>
@@ -109,6 +115,7 @@ const Chat = () => {
         <GifUploader onGifUpload={onGifUpload} />
         <Button colorScheme="teal" onClick={handleSendMessage}>Send</Button>
       </Flex>
+      <Button colorScheme="blue" mt={4} onClick={handleVideoCall}>Start Video Call</Button>
     </Box>
   );
 };
