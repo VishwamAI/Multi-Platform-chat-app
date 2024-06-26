@@ -1,0 +1,12 @@
+
+> backend@1.0.0 start
+> node index.js
+
+Server is running on port 5000
+Connected to the SQLite database.
+Status column already exists or another error: SQLITE_ERROR: duplicate column name: status
+Login attempt with username: testuser and password: password
+Password match: false
+Login attempt with username: testuser and password: password
+Password match: false
+Killed
