@@ -50,9 +50,12 @@ const VideoCall = () => {
 
     // Initialize Dyte client
     const initDyteClient = async () => {
+      console.log("Initializing Dyte client...");
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/dyte/init`);
+        console.log("Fetch response:", response);
         const data = await response.json();
+        console.log("Meeting data:", data);
         setMeeting(data.meeting);
       } catch (error) {
         console.error("Error initializing Dyte client:", error);
