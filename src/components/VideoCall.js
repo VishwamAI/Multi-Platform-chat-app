@@ -83,9 +83,15 @@ const VideoCall = () => {
       console.log("Initializing Dyte client...");
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/dyte/init`);
-        console.log("Fetch response:", response);
+        console.log("Fetch response status:", response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         console.log("Meeting data:", data);
+        if (!data.meeting) {
+          throw new Error("No meeting data found in response");
+        }
         setMeeting(data.meeting);
       } catch (error) {
         console.error("Error initializing Dyte client:", error);
