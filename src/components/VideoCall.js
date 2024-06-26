@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Button, Text, Input, Alert, AlertIcon } from "@chakra-ui/react";
-import { DyteMeeting, DyteProvider } from "@dyte/react-web-core";
+import { Box, Text, Alert, AlertIcon } from "@chakra-ui/react";
+import { DyteMeeting } from "@dytesdk/react-web-core";
 
 const VideoCall = () => {
   const [meeting, setMeeting] = useState(null);
@@ -9,7 +9,6 @@ const VideoCall = () => {
   const [microphonePermission, setMicrophonePermission] = useState("prompt");
 
   const userVideo = useRef();
-  const partnerVideo = useRef();
 
   useEffect(() => {
     console.log("Setting up Dyte client");
