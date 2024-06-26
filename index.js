@@ -14,7 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ['https://heartfelt-sfogliatella-57f742.netlify.app', 'http://localhost:3000'], // Allow requests from the Netlify frontend and local development
+    origin: ['https://admirable-youtiao-aa6d4a.netlify.app', 'http://localhost:3000'], // Allow requests from the Netlify frontend and local development
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowedOrigins = ['https://heartfelt-sfogliatella-57f742.netlify.app', 'http://localhost:3000'];
+    const allowedOrigins = ['https://admirable-youtiao-aa6d4a.netlify.app', 'http://localhost:3000'];
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
