@@ -136,7 +136,12 @@ const VideoCall = () => {
           <Text fontSize="2xl" mb={4} textAlign="center">Video Call</Text>
           <Box display="flex" justifyContent="space-around" mb={4}>
             <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
-            {dyteMeeting && <DyteMeeting meeting={dyteMeeting} style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />}
+            {dyteMeeting && (
+              <>
+                <DyteMeeting meeting={dyteMeeting} style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
+                {console.log("DyteMeeting component rendered")}
+              </>
+            )}
           </Box>
           {errorMessage && (
             <Alert status="error" mt={4}>
