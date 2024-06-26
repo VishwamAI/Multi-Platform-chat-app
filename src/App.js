@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { customTheme } from "./theme";
-import { FaComments, FaUserFriends, FaUsers, FaCog } from "react-icons/fa";
+import { FaComments, FaUserFriends, FaUsers, FaCog, FaUpload } from "react-icons/fa";
 import Chat from "./components/Chat";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -18,6 +18,7 @@ import VideoCall from "./components/VideoCall";
 import Contacts from "./components/Contacts";
 import Groups from "./components/Groups";
 import Settings from "./components/Settings";
+import VideoUpload from "./components/VideoUpload";
 
 function App() {
   const navigate = useNavigate();
@@ -69,6 +70,16 @@ function App() {
                 onClick={() => navigate("/settings")}
               />
             </Box>
+            <Box p={4}>
+              <IconButton
+                icon={<FaUpload />}
+                aria-label="Upload Video"
+                variant="ghost"
+                colorScheme="whiteAlpha"
+                isRound
+                onClick={() => navigate("/upload-video")}
+              />
+            </Box>
           </Box>
           <Box width="300px" bg="gray.700" color="white">
             {/* Chat list */}
@@ -86,6 +97,7 @@ function App() {
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/groups" element={<Groups />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/upload-video" element={<VideoUpload />} />
               <Route path="/" element={<Login />} />
             </Routes>
           </Box>
