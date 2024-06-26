@@ -31,7 +31,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const VideoCall = () => {
+const VideoCall = ({ backendUrl }) => {
   console.log("VideoCall component is being called");
   console.log("Rendering VideoCall component");
   const [meeting, setMeeting] = useState(null);
@@ -44,7 +44,6 @@ const VideoCall = () => {
   useEffect(() => {
     console.log("Executing useEffect in VideoCall component");
     console.log("Setting up Dyte client");
-    console.log("REACT_APP_API_URL:", process.env.REACT_APP_API_URL);
 
     navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
       console.log("Camera permission status:", permissionStatus.state);
@@ -100,7 +99,7 @@ const VideoCall = () => {
     const initDyteClient = async () => {
       console.log("Initializing Dyte client...");
       try {
-        const requestUrl = `${process.env.REACT_APP_API_URL}/dyte/init`;
+        const requestUrl = `${backendUrl}/dyte/init`;
         console.log("Fetch request URL:", requestUrl);
         const response = await fetch(requestUrl);
         console.log("Fetch response status:", response.status);
@@ -125,7 +124,7 @@ const VideoCall = () => {
     console.log("Calling initDyteClient function");
     initDyteClient();
     console.log("Completed initDyteClient function call");
-  }, []);
+  }, [backendUrl]);
 
   const dyteClient = useDyteClient();
   const dyteMeeting = useDyteMeeting(dyteClient, meeting);

@@ -4,7 +4,7 @@ import Picker from 'emoji-picker-react';
 import GifUploader from './GifUploader';
 import { useNavigate } from 'react-router-dom';
 
-const Chat = () => {
+const Chat = ({ backendUrl }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [receiver, setReceiver] = useState("");
@@ -17,7 +17,7 @@ const Chat = () => {
     // Fetch message history between the logged-in user and the selected receiver
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/history/${username}/${receiver}`);
+        const response = await fetch(`${backendUrl}/messages/history/${username}/${receiver}`);
         const data = await response.json();
         setMessages(data.messages);
       } catch (error) {
@@ -28,13 +28,13 @@ const Chat = () => {
     if (receiver) {
       fetchMessages();
     }
-  }, [receiver, username]);
+  }, [receiver, username, backendUrl]);
 
   useEffect(() => {
     // Fetch the list of users
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/users`);
+        const response = await fetch(`${backendUrl}/users`);
         const data = await response.json();
         setUsers(data.users);
       } catch (error) {
@@ -43,11 +43,11 @@ const Chat = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [backendUrl]);
 
   const handleSendMessage = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/messages/send`, {
+      const response = await fetch(`${backendUrl}/messages/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

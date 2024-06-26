@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Button, Input, Text, useToast } from "@chakra-ui/react";
+import axios from "axios";
 
-const VideoUpload = () => {
+const VideoUpload = ({ backendUrl }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const toast = useToast();
 
@@ -9,7 +10,7 @@ const VideoUpload = () => {
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) {
       toast({
         title: "No file selected.",
@@ -21,15 +22,32 @@ const VideoUpload = () => {
       return;
     }
 
-    // Implement the upload logic here
-    // For now, we'll just show a success message
-    toast({
-      title: "Upload successful.",
-      description: `Video file "${selectedFile.name}" uploaded successfully.`,
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+    const formData = new FormData();
+    formData.append('video', selectedFile);
+
+    try {
+      await axios.post(`${backendUrl}/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      toast({
+        title: "Upload successful.",
+        description: `Video file "${selectedFile.name}" uploaded successfully.`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed.",
+        description: error.response ? error.response.data : error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   return (

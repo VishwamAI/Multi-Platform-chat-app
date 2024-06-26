@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Box, Text, Input, Button } from "@chakra-ui/react";
 
-const StatusUpdate = () => {
+const StatusUpdate = ({ backendUrl }) => {
   const [status, setStatus] = useState("");
 
   const handleStatusUpdate = async () => {
     try {
-      const response = await fetch('https://messaging-app-5btcll2g.devinapps.com/status', {
+      const response = await fetch(`${backendUrl}/status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

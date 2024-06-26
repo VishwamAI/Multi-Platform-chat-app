@@ -1,13 +1,29 @@
 import React, { useState } from "react";
 import { Box, Text, Input, Button } from "@chakra-ui/react";
+import axios from "axios";
 
-const Register = () => {
+const Register = ({ backendUrl }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = () => {
-    // Handle registration logic here
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      console.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${backendUrl}/auth/register`, {
+        email,
+        password,
+      });
+      console.log("Registration successful:", response.data);
+      // Handle successful registration, e.g., redirect to login page
+    } catch (error) {
+      console.error("Registration failed:", error.response ? error.response.data : error.message);
+      // Handle registration failure, e.g., show error message to user
+    }
   };
 
   return (

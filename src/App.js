@@ -20,6 +20,8 @@ import Groups from "./components/Groups";
 import Settings from "./components/Settings";
 import VideoUpload from "./components/VideoUpload";
 
+const backendUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://your-production-backend-url.com';
+
 function App() {
   const navigate = useNavigate();
 
@@ -88,17 +90,17 @@ function App() {
           <Box flex="1" bg="gray.900" color="white">
             {/* Main chat area */}
             <Routes>
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/status" element={<StatusUpdate />} />
-              <Route path="/user-status/:username" element={<UserStatus />} />
-              <Route path="/videocall" element={<VideoCall />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/groups" element={<Groups />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/upload-video" element={<VideoUpload />} />
-              <Route path="/" element={<Login />} />
+              <Route path="/chat" element={<Chat backendUrl={backendUrl} />} />
+              <Route path="/login" element={<Login backendUrl={backendUrl} />} />
+              <Route path="/register" element={<Register backendUrl={backendUrl} />} />
+              <Route path="/status" element={<StatusUpdate backendUrl={backendUrl} />} />
+              <Route path="/user-status/:username" element={<UserStatus backendUrl={backendUrl} />} />
+              <Route path="/videocall" element={<VideoCall backendUrl={backendUrl} />} />
+              <Route path="/contacts" element={<Contacts backendUrl={backendUrl} />} />
+              <Route path="/groups" element={<Groups backendUrl={backendUrl} />} />
+              <Route path="/settings" element={<Settings backendUrl={backendUrl} />} />
+              <Route path="/upload-video" element={<VideoUpload backendUrl={backendUrl} />} />
+              <Route path="/" element={<Login backendUrl={backendUrl} />} />
             </Routes>
           </Box>
         </Flex>
