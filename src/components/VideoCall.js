@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Text, Alert, AlertIcon } from "@chakra-ui/react";
-import { DyteMeeting } from "@dytesdk/react-web-core";
+import { DyteProvider, useDyteClient, useDyteMeeting } from "@dytesdk/react-web-core";
+import { DyteMeeting } from "@dytesdk/react-ui-kit";
 
 const VideoCall = () => {
   const [meeting, setMeeting] = useState(null);
@@ -62,27 +63,32 @@ const VideoCall = () => {
     initDyteClient();
   }, []);
 
+  const dyteClient = useDyteClient();
+  const dyteMeeting = useDyteMeeting(dyteClient, meeting);
+
   return (
-    <Box p={4}>
-      <Text fontSize="2xl" mb={4} textAlign="center">Video Call</Text>
-      <Box display="flex" justifyContent="space-around" mb={4}>
-        <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
-        {meeting && <DyteMeeting meeting={meeting} style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />}
-      </Box>
-      {errorMessage && (
-        <Alert status="error" mt={4}>
-          <AlertIcon />
-          {errorMessage}
-        </Alert>
-      )}
-      <Box mt={4} textAlign="center">
-        <Text>Camera Permission: <b>{cameraPermission}</b></Text>
-        <Text>Microphone Permission: <b>{microphonePermission}</b></Text>
-        {cameraPermission === "prompt" && microphonePermission === "prompt" && (
-          <Text color="red.500" mt={2}>Please allow camera and microphone access to use the video call feature.</Text>
+    <DyteProvider value={dyteClient}>
+      <Box p={4}>
+        <Text fontSize="2xl" mb={4} textAlign="center">Video Call</Text>
+        <Box display="flex" justifyContent="space-around" mb={4}>
+          <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
+          {dyteMeeting && <DyteMeeting meeting={dyteMeeting} style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />}
+        </Box>
+        {errorMessage && (
+          <Alert status="error" mt={4}>
+            <AlertIcon />
+            {errorMessage}
+          </Alert>
         )}
+        <Box mt={4} textAlign="center">
+          <Text>Camera Permission: <b>{cameraPermission}</b></Text>
+          <Text>Microphone Permission: <b>{microphonePermission}</b></Text>
+          {cameraPermission === "prompt" && microphonePermission === "prompt" && (
+            <Text color="red.500" mt={2}>Please allow camera and microphone access to use the video call feature.</Text>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </DyteProvider>
   );
 };
 
