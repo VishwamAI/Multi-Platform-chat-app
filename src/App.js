@@ -20,7 +20,7 @@ import Groups from "./components/Groups";
 import Settings from "./components/Settings";
 import VideoUpload from "./components/VideoUpload";
 
-const backendUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://your-production-backend-url.com';
+const backendUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://messaging-app-wzfezox9.devinapps.com';
 
 function App() {
   const navigate = useNavigate();
