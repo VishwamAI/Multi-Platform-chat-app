@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Box, Text, Input, Button } from "@chakra-ui/react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ const Login = () => {
       // Store the JWT token in localStorage
       localStorage.setItem('token', response.data.token);
       // Redirect to chat page or handle successful login
+      navigate('/chat');
     } catch (error) {
       console.error("Login failed:", error.response ? error.response.data : error.message);
       // Handle login failure, e.g., show error message to user
