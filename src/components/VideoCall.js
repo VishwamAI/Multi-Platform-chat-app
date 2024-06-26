@@ -32,6 +32,7 @@ class ErrorBoundary extends React.Component {
 }
 
 const VideoCall = () => {
+  console.log("Rendering VideoCall component");
   const [meeting, setMeeting] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [cameraPermission, setCameraPermission] = useState("prompt");
@@ -40,6 +41,7 @@ const VideoCall = () => {
   const userVideo = useRef();
 
   useEffect(() => {
+    console.log("Executing useEffect in VideoCall component");
     console.log("Setting up Dyte client");
 
     navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
