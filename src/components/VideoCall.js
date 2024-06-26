@@ -99,7 +99,9 @@ const VideoCall = () => {
       }
     };
 
+    console.log("Calling initDyteClient function");
     initDyteClient();
+    console.log("Completed initDyteClient function call");
   }, []);
 
   const dyteClient = useDyteClient();
