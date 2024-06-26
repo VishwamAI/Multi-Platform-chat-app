@@ -20,7 +20,8 @@ import Groups from "./components/Groups";
 import Settings from "./components/Settings";
 import VideoUpload from "./components/VideoUpload";
 
-const backendUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://messaging-app-wzfezox9.devinapps.com';
+// Determine the backend URL based on the hostname
+const backendUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://messaging-app-wzfezox9.devinapps.com';
 
 function App() {
   const navigate = useNavigate();
