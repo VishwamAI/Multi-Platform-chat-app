@@ -1,27 +1,48 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Button, Text, Input, Alert, AlertIcon } from "@chakra-ui/react";
-import SimplePeer from "simple-peer";
-import io from "socket.io-client";
+import { Box, Text, Alert, AlertIcon } from "@chakra-ui/react";
+import { DyteProvider, useDyteClient, useDyteMeeting } from "@dytesdk/react-web-core";
+import { DyteMeeting } from "@dytesdk/react-ui-kit";
 
-const socket = io("https://messaging-app-5btcll2g.devinapps.com");
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Alert status="error" mt={4}>
+          <AlertIcon />
+          Something went wrong: {this.state.error.message}
+        </Alert>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const VideoCall = () => {
-  const [stream, setStream] = useState(null);
-  const [receivingCall, setReceivingCall] = useState(false);
-  const [caller, setCaller] = useState("");
-  const [callerSignal, setCallerSignal] = useState(null);
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [peer, setPeer] = useState(null);
+  console.log("Rendering VideoCall component");
+  const [meeting, setMeeting] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [cameraPermission, setCameraPermission] = useState("prompt");
   const [microphonePermission, setMicrophonePermission] = useState("prompt");
-  const [userIdToCall, setUserIdToCall] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const userVideo = useRef();
-  const partnerVideo = useRef();
 
   useEffect(() => {
-    console.log("Setting up socket event listeners");
+    console.log("Executing useEffect in VideoCall component");
+    console.log("Setting up Dyte client");
 
     navigator.permissions.query({ name: "camera" }).then((permissionStatus) => {
       setCameraPermission(permissionStatus.state);
@@ -44,7 +65,6 @@ const VideoCall = () => {
       if (hasVideoInput && hasAudioInput) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
-            setStream(stream);
             if (userVideo.current) {
               userVideo.current.srcObject = stream;
             }
@@ -58,108 +78,58 @@ const VideoCall = () => {
       }
     });
 
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-    });
-
-    socket.on("callUser", (data) => {
-      console.log("Received callUser event:", data);
-      setReceivingCall(true);
-      setCaller(data.from);
-      setCallerSignal(data.signal);
-    });
-
-    socket.on("callAccepted", (signal) => {
-      console.log("Received callAccepted event");
-      setCallAccepted(true);
-      peer.signal(signal);
-    });
-
-    socket.on("callError", (data) => {
-      console.log("Received callError event:", data);
-      setErrorMessage(data.message);
-      console.log("Error Message Set:", data.message);
-    });
-
-    console.log("Socket event listeners set up");
-  }, [peer]);
-
-  const callUser = () => {
-    if (!userIdToCall) {
-      setErrorMessage("Please enter a valid user ID.");
-      return;
-    }
-
-    const peer = new SimplePeer({
-      initiator: true,
-      trickle: false,
-      stream: stream,
-    });
-
-    peer.on("signal", (data) => {
-      socket.emit("callUser", { userToCall: userIdToCall, signalData: data, from: socket.id });
-    });
-
-    peer.on("stream", (stream) => {
-      if (partnerVideo.current) {
-        partnerVideo.current.srcObject = stream;
+    // Initialize Dyte client
+    const initDyteClient = async () => {
+      console.log("Initializing Dyte client...");
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/dyte/init`);
+        console.log("Fetch response status:", response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Meeting data:", data);
+        if (!data.meeting) {
+          throw new Error("No meeting data found in response");
+        }
+        setMeeting(data.meeting);
+      } catch (error) {
+        console.error("Error initializing Dyte client:", error);
+        setErrorMessage("Could not initialize Dyte client. Please try again later.");
       }
-    });
+    };
 
-    setPeer(peer);
-  };
+    initDyteClient();
+  }, []);
 
-  const acceptCall = () => {
-    setCallAccepted(true);
-    const peer = new SimplePeer({
-      initiator: false,
-      trickle: false,
-      stream: stream,
-    });
-
-    peer.on("signal", (data) => {
-      socket.emit("acceptCall", { signal: data, to: caller });
-    });
-
-    peer.on("stream", (stream) => {
-      partnerVideo.current.srcObject = stream;
-    });
-
-    peer.signal(callerSignal);
-    setPeer(peer);
-  };
+  const dyteClient = useDyteClient();
+  const dyteMeeting = useDyteMeeting(dyteClient, meeting);
 
   return (
-    <Box p={4}>
-      <Text fontSize="2xl" mb={4} textAlign="center">Video Call</Text>
-      <Box display="flex" justifyContent="space-around" mb={4}>
-        <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
-        {callAccepted && <video playsInline ref={partnerVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />}
-      </Box>
-      <Box display="flex" justifyContent="center" mb={4}>
-        <Input placeholder="Enter user ID to call..." width="300px" mr={2} value={userIdToCall} onChange={(e) => setUserIdToCall(e.target.value)} />
-        <Button colorScheme="teal" onClick={callUser}>Call User</Button>
-      </Box>
-      {receivingCall && !callAccepted && (
-        <Box textAlign="center" mt={4}>
-          <Text fontSize="lg" mb={2}>{caller} is calling you</Text>
-          <Button colorScheme="teal" onClick={acceptCall}>Accept Call</Button>
+    <ErrorBoundary>
+      <DyteProvider value={dyteClient}>
+        <Box p={4}>
+          <Text fontSize="2xl" mb={4} textAlign="center">Video Call</Text>
+          <Box display="flex" justifyContent="space-around" mb={4}>
+            <video playsInline muted ref={userVideo} autoPlay style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />
+            {dyteMeeting && <DyteMeeting meeting={dyteMeeting} style={{ width: "300px", borderRadius: "10px", border: "2px solid #4A90E2" }} />}
+          </Box>
+          {errorMessage && (
+            <Alert status="error" mt={4}>
+              <AlertIcon />
+              {errorMessage}
+            </Alert>
+          )}
+          <Box mt={4} textAlign="center">
+            <Text>Camera Permission: <b>{cameraPermission}</b></Text>
+            <Text>Microphone Permission: <b>{microphonePermission}</b></Text>
+            {cameraPermission === "prompt" && microphonePermission === "prompt" && (
+              <Text color="red.500" mt={2}>Please allow camera and microphone access to use the video call feature.</Text>
+            )}
+          </Box>
         </Box>
-      )}
-      {errorMessage && (
-        <Alert status="error" mt={4}>
-          <AlertIcon />
-          {errorMessage}
-        </Alert>
-      )}
-      <Box mt={4} textAlign="center">
-        <Text>Camera Permission: <b>{cameraPermission}</b></Text>
-        <Text>Microphone Permission: <b>{microphonePermission}</b></Text>
-        {cameraPermission === "prompt" && microphonePermission === "prompt" && (
-          <Text color="red.500" mt={2}>Please allow camera and microphone access to use the video call feature.</Text>
-        )}
-      </Box>
-    </Box>
+      </DyteProvider>
+    </ErrorBoundary>
   );
 };
 
